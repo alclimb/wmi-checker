@@ -2,12 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.Data;
-    using System.Drawing;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using System.Windows.Forms;
 
     public partial class MainForm : Form
@@ -16,13 +10,33 @@
         {
             this.InitializeComponent();
 
-            // WMI取得処理
-            Utils.GetWmiObj("Win32_ComputerSystemProduct", (obj) =>
-            {
-                System.Diagnostics.Debug.WriteLine(obj.Properties["Name"].Value.ToString());
-            });
+            this.wmiClassNameTextBox.Text = "Win32_OperatingSystem";
         }
 
+        private void WmiClassNameTextBox_TextChanged(object sender, EventArgs e)
+        {
+            var className = this.wmiClassNameTextBox.Text;
+
+            try
+            {
+                var info = new CustomObjectType();
+
+                // WMI取得処理
+                Utils.GetWmiObj(className, (obj) =>
+                {
+                    foreach (var property in obj.Properties)
+                    {
+                        info.Properties.Add(new CustomProperty { Name = property.Name, Type = typeof(String), DefaultValue = property.Value?.ToString() });
+                    }
+                });
+
+                this.propertyGrid.SelectedObject = info;
+            }
+            catch (Exception)
+            {
+                this.propertyGrid.SelectedObject = new Object();
+            }
+        }
     }
 
     public static class Utils

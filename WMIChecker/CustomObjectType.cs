@@ -62,7 +62,7 @@
                 this.prop = prop;
             }
 
-            public override string Category { get { return "Properties"; } }
+            public override string Category { get { return prop.Category; } }
             public override string Description { get { return prop.Desc; } }
             public override string Name { get { return prop.Name; } }
             public override bool ShouldSerializeValue(object component) { return ((CustomObjectType)component)[prop.Name] != null; }
@@ -83,5 +83,6 @@
         public string Desc { get; set; }
         public object DefaultValue { get; set; }
         public Type Type { get; set; }
+        public string Category { get; set; } = "";
     }
 }

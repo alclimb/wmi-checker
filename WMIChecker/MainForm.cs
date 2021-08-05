@@ -20,14 +20,24 @@
             try
             {
                 var info = new CustomObjectType();
+                var i = 0;
 
                 // WMI取得処理
                 Utils.GetWmiObj(className, (obj) =>
                 {
                     foreach (var property in obj.Properties)
                     {
-                        info.Properties.Add(new CustomProperty { Name = property.Name, Type = typeof(String), DefaultValue = property.Value?.ToString() });
+                        info.Properties.Add(new CustomProperty()
+                        {
+                            Name = property.Name,
+                            Type = typeof(String),
+                            DefaultValue = property.Value?.ToString(),
+                            Category = string.Format("{0}", i),
+                            Desc = string.Format("Type: \"{0}\"", property.Type),
+                        });
                     }
+
+                    i++;
                 });
 
                 this.propertyGrid.SelectedObject = info;

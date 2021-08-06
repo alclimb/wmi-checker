@@ -16,6 +16,7 @@
         private void WmiClassNameTextBox_TextChanged(object sender, EventArgs e)
         {
             var className = this.wmiClassNameTextBox.Text;
+            var scope = this.scopeTextBox.Text;
 
             try
             {
@@ -23,7 +24,7 @@
                 var i = 0;
 
                 // WMI取得処理
-                Utils.GetWmiObj(className, (obj) =>
+                Utils.GetWmiObj(scope, className, (obj) =>
                 {
                     foreach (var property in obj.Properties)
                     {
@@ -51,10 +52,10 @@
 
     public static class Utils
     {
-        public static void GetWmiObj(string classPath, Action<System.Management.ManagementBaseObject> action)
+        public static void GetWmiObj(string scope, string classPath, Action<System.Management.ManagementBaseObject> action)
         {
             // WMI取得処理
-            using (var objClass = new System.Management.ManagementClass(classPath))
+            using (var objClass = new System.Management.ManagementClass(scope, classPath, new System.Management.ObjectGetOptions()))
             using (var objCollection = objClass.GetInstances())
             {
                 foreach (var obj in objCollection)

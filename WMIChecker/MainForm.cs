@@ -22,6 +22,9 @@
             // UI操作: プロパティグリッドを無効化
             this.propertyGrid.Enabled = false;
 
+            // UI操作: プログレスバーをマーキースタイルに変更
+            this.toolStripProgressBar1.Style = ProgressBarStyle.Marquee;
+
             // UI操作: 情報取得
             var className = this.wmiClassNameTextBox.Text;
             var scope = this.scopeTextBox.Text;
@@ -61,6 +64,9 @@
             }
             finally
             {
+                // UI操作: プログレスバーを元に戻す
+                this.toolStripProgressBar1.Style = ProgressBarStyle.Continuous;
+
                 // UI操作: プロパティグリッドを有効化
                 this.propertyGrid.Enabled = true;
             }

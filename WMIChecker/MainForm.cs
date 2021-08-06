@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using System.Windows.Forms;
 
     public partial class MainForm : Form
@@ -13,39 +14,55 @@
             this.wmiClassNameTextBox.Text = "Win32_OperatingSystem";
         }
 
-        private void WmiClassNameTextBox_TextChanged(object sender, EventArgs e)
+        private async void WmiClassNameTextBox_TextChanged(object sender, EventArgs e)
         {
+            // UI操作: プロパティグリッドを設定
+            this.propertyGrid.SelectedObject = new Object();
+
+            // UI操作: プロパティグリッドを無効化
+            this.propertyGrid.Enabled = false;
+
+            // UI操作: 情報取得
             var className = this.wmiClassNameTextBox.Text;
             var scope = this.scopeTextBox.Text;
 
             try
             {
                 var info = new CustomObjectType();
-                var i = 0;
 
-                // WMI取得処理
-                Utils.GetWmiObj(scope, className, (obj) =>
+                await Task.Run(() =>
                 {
-                    foreach (var property in obj.Properties)
-                    {
-                        info.Properties.Add(new CustomProperty()
-                        {
-                            Name = property.Name,
-                            Type = typeof(String),
-                            DefaultValue = property.Value?.ToString(),
-                            Category = string.Format("{0}", i),
-                            Desc = string.Format("Type: \"{0}\"", property.Type),
-                        });
-                    }
+                    var i = 0;
 
-                    i++;
+                    // WMI取得処理
+                    Utils.GetWmiObj(scope, className, (obj) =>
+                    {
+                        foreach (var property in obj.Properties)
+                        {
+                            info.Properties.Add(new CustomProperty()
+                            {
+                                Name = property.Name,
+                                Type = typeof(String),
+                                DefaultValue = property.Value?.ToString(),
+                                Category = string.Format("{0}", i),
+                                Desc = string.Format("Type: \"{0}\"", property.Type),
+                            });
+                        }
+
+                        i++;
+                    });
                 });
 
+                // UI操作: プロパティグリッドを設定
                 this.propertyGrid.SelectedObject = info;
             }
             catch (Exception)
             {
-                this.propertyGrid.SelectedObject = new Object();
+            }
+            finally
+            {
+                // UI操作: プロパティグリッドを有効化
+                this.propertyGrid.Enabled = true;
             }
         }
     }
